@@ -6,6 +6,8 @@ lazy val root = (project in file(".")).
     )),
     name := "My Akka HTTP Project",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "fastparse" % "2.1.0"
+      "com.lihaoyi" %% "fastparse" % "2.1.0",
+      "org.scalactic" %% "scalactic" % "3.0.5",
+      "org.scalatest" %% "scalatest" % "3.0.5" % "test"
     )
   )
