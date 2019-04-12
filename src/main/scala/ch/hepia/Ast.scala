@@ -8,6 +8,7 @@ object Ast {
 
   sealed trait Op
   object Op {
+    case object Neq extends Op
     case object Eq extends Op
     case object Big extends Op
     case object Less extends Op

@@ -33,12 +33,13 @@ object Parser {
   def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationName)
     .map { case (left, cond, right) => Ast.Relation.Join(left,cond,right) }
 
+  def neqSign[_: P]: P[Op] = P("!=").!.map( _ => Op.Eq )
   def eqSign[_: P]: P[Op] = P("=").!.map( _ => Op.Eq )
   def bigSign[_: P]: P[Op] = P(">").!.map( _ => Op.Big )
   def lessSign[_: P]: P[Op] = P("<").!.map( _ => Op.Less )
   def lessEqSign[_: P]: P[Op] = P("<=").!.map( _ => Op.LessEq )
   def bigEqSign[_: P]: P[Op] = P(">=").!.map( _ => Op.BigEq )
-  def sign[_: P]: P[Op] = P( " " ~ (eqSign|bigEqSign|lessEqSign|bigSign|lessSign) ~ " " )
+  def sign[_: P]: P[Op] = P( " " ~ (neqSign|eqSign|bigEqSign|lessEqSign|bigSign|lessSign) ~ " " )
 
   def comparisonExpr[_: P]: P[Cond] = P( attributeName ~ sign ~ value ).map { case (a, s, v) => Cond(a, s, v) }
 
