@@ -42,20 +42,11 @@ object Parser {
 
   def comparisonExpr[_: P]: P[Cond] = P( attributeName ~ sign ~ value ).map { case (a, s, v) => Cond(a, s, v) }
 
-//  def logicExpr[_: P]: P[LogicOp] = P( andSign|orSign|comparisonExpr )
-//def andTerm[_: P]: P[Cond] = comparisonExpr
-//  def orTerm[_: P]: P[Seq[LogicOp]] = P( andTerm.rep(sep=" and ".rep./) )
- // def logicExpr[_: P]: P[Seq[LogicOp]] = P( orTerm.rep(sep=" or ".rep./) )
-
   def logicFactor[_: P]: P[LogicOp] = comparisonExpr
   def orTerm[_: P]: P[LogicOp] = P( logicFactor ~ " or " ~ logicTerm ).map {case (t, lf) => Ast.LogicOp.Or(t,lf)}
   def logicTerm[_: P]: P[LogicOp] = P( orTerm | logicFactor )
   def andTerm[_: P]: P[LogicOp] = P( logicTerm ~ " and " ~ logicExpr ).map {case (t, lf) => Ast.LogicOp.And(t,lf)}
   def logicExpr[_: P]: P[LogicOp] = P( andTerm | logicTerm )
-
-  //def andSign[_: P]: P[LogicOp] = P(logicExpr ~ " and " ~ logicExpr).map { case (cond1, cond2) => LogicOp.And(cond1, cond2) }
-  //def orSign[_: P]: P[LogicOp] = P(logicExpr ~ " or " ~ logicExpr).map { case (cond1, cond2) => LogicOp.Or(cond1, cond2) }
-
 
   def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")" ~ relationExpr ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
 
