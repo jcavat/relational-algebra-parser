@@ -55,5 +55,5 @@ object Parser {
 
   def piExpr[_: P] = P("pi(" ~ funcArguments ~ ")(" ~ relationExpr ~ ")").map { case (attrs, rel) => PiExpr(attrs, rel) }
 
-  def parseAlgebra[_: P] = P(piExpr|relationExpr)
+  def parseAlgebra[_: P]: P[Ast] = P(piExpr|relationExpr)
 }
