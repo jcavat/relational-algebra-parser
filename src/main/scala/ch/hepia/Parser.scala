@@ -30,7 +30,7 @@ object Parser {
     } yield Relation.JoinCond(a1, Op.Eq, a2)
   )
 
-  def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationName)
+  def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationExpr)
     .map { case (left, cond, right) => Ast.Relation.Join(left,cond,right) }
 
   def neqSign[_: P]: P[Op] = P("!=").!.map( _ => Op.Eq )

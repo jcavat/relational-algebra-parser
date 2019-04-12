@@ -48,14 +48,16 @@ object Ast {
     case class Sigma(cond: LogicOp, relation: Relation) extends Relation
 
 
-    def toSql(relation: Relation): String = relation match {
+    def toSql(relation: Relation, placeBefore: String = ""): String = relation match {
       case SingleRelation(id) => id.name
-      case Join(left, cond, right) => toSql(left) + " INNER JOIN " + toSql(right) + " ON " + toSql(cond)
+      case Join(left, cond, Join(l,c,r)) =>
+        toSql(left) + " INNER JOIN " + toSql(l) + " ON " + toSql(cond) + " INNER JOIN " + toSql(r, " ON " + toSql(c))
+      case Join(left, cond, right) => toSql(left) + placeBefore + " INNER JOIN " + toSql(right) + " ON " + toSql(cond)
       case JoinCond(left, cond, right) => left.name + ShowSql[Op].showSql(cond) + right.name
       case Sigma(cond, rel) =>  toSql(rel) + " WHERE " + ShowSql[LogicOp].showSql(cond)
     }
 
-    implicit val canShow = ShowSql[Relation]( toSql )
+    implicit val canShow = ShowSql[Relation]( r => toSql(r, "") )
 
   }
 
