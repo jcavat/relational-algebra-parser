@@ -1,8 +1,10 @@
 package ch.hepia
 
 import fastparse.{CharIn, P}
-import fastparse._, NoWhitespace._
+import fastparse._
+import NoWhitespace._
 import Ast._
+import ch.hepia.Ast.LogicOp.Cond
 
 object Parser {
   def value[_: P]: P[Value] = CharIn("a-zA-Z0-9").rep(1).!.map( Value )
@@ -11,31 +13,44 @@ object Parser {
 
   def capitalizedIdName[_: P] = CharIn("A-Z") ~ CharIn("a-z").rep
 
-  def attributeName[_: P] = P( Parser.idName.! ).map( AttributeId )
+  def attributeName[_: P] = P( idName.! ).map( AttributeId )
 
-  def relationName[_: P]: P[Relation] = P( Parser.capitalizedIdName.! ).map(n => Ast.Relation.SingleRelation(RelationalId(n)))
+  def relationName[_: P]: P[Relation] = P( capitalizedIdName.! ).map(n => Ast.Relation.SingleRelation(RelationalId(n)))
 
   def funcArguments[_: P] =
-    P( " ".rep ~ Parser.attributeName.!.rep(sep=" ".rep ~ "," ~ " ".rep./) ).map(seqs => seqs.map( AttributeId ) )
+    P( " ".rep ~ attributeName.!.rep(sep=" ".rep ~ "," ~ " ".rep./) ).map(seqs => seqs.map( AttributeId ) )
 
   def eqJoinCond[_: P] = P(
     for {
       _ <- P(" join(")
-      a1 <- Parser.attributeName
+      a1 <- attributeName
       _ <- P(" = ")
-      a2 <- Parser.attributeName
+      a2 <- attributeName
       _ <- P(") ")
     } yield Relation.JoinCond(a1, Op.Eq, a2)
   )
 
-  def joinExpr[_: P]: P[Relation] = P(Parser.relationName ~ Parser.eqJoinCond ~ Parser.relationName)
+  def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationName)
     .map { case (left, cond, right) => Ast.Relation.Join(left,cond,right) }
 
-  def eqExpr[_: P]: P[Cond] = P( Parser.attributeName ~ " = " ~ Parser.value ).map { case (a, v) => Cond(a, Op.Eq, v) }
+  def eqSign[_: P]: P[Op] = P("=").!.map( _ => Op.Eq )
+  def bigSign[_: P]: P[Op] = P(">").!.map( _ => Op.Big )
+  def lessSign[_: P]: P[Op] = P("<").!.map( _ => Op.Less )
+  def lessEqSign[_: P]: P[Op] = P("<=").!.map( _ => Op.LessEq )
+  def bigEqSign[_: P]: P[Op] = P(">=").!.map( _ => Op.BigEq )
+  def sign[_: P]: P[Op] = P( " " ~ (eqSign|bigEqSign|lessEqSign|bigSign|lessSign) ~ " " )
 
-  def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ Parser.eqExpr ~ ")" ~ relExpr ).map { case (eqE, rel) => Relation.Sigma(eqE, rel) }
+  def comparisonExpr[_: P]: P[Cond] = P( attributeName ~ sign ~ value ).map { case (a, s, v) => Cond(a, s, v) }
 
-  def relExpr[_: P] = P("(" ~ (Parser.sigmaExpr|Parser.joinExpr|Parser.relationName) ~ ")")
+  def logicExpr[_: P]: P[LogicOp] = P( andSign|orSign|comparisonExpr )
 
-  def piArguments[_: P] = P("pi(" ~ Parser.funcArguments ~ ")" ~ Parser.relExpr).map { case (attrs, rel) => PiExpr(attrs, rel) }
+  def andSign[_: P]: P[LogicOp] = P(logicExpr ~ " and " ~ logicExpr).map { case (cond1, cond2) => LogicOp.And(cond1, cond2) }
+  def orSign[_: P]: P[LogicOp] = P(logicExpr ~ " or " ~ logicExpr).map { case (cond1, cond2) => LogicOp.Or(cond1, cond2) }
+
+
+  def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")" ~ relationExpr ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
+
+  def relationExpr[_: P] = P("(" ~ (sigmaExpr|joinExpr|relationName) ~ ")")
+
+  def piExpr[_: P] = P("pi(" ~ funcArguments ~ ")" ~ relationExpr).map { case (attrs, rel) => PiExpr(attrs, rel) }
 }
