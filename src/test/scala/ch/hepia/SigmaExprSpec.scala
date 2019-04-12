@@ -70,7 +70,6 @@ class SigmaExprSpec extends FlatSpec with Matchers {
         SingleRelation(RelationalId("Person")))
     )
   }
-  /*
   "Sigma expr with conditions" should "succeed with and/or" in {
     val Parsed.Success(value, _) = parse("sigma(age > 18 and name = david or lastname = jackson)(Person)", sigmaExpr(_))
     value should be (
@@ -85,5 +84,18 @@ class SigmaExprSpec extends FlatSpec with Matchers {
         SingleRelation(RelationalId("Person")))
     )
   }
-  */
+  "Sigma expr with conditions" should "succeed with or/and" in {
+    val Parsed.Success(value, _) = parse("sigma(age > 18 or name = david and lastname = jackson)(Person)", sigmaExpr(_))
+    value should be (
+      Sigma(
+        And(
+          Or(
+            Cond(AttributeId("age"), Op.Big, Value("18")),
+            Cond(AttributeId("name"), Op.Eq, Value("david"))
+          ),
+          Cond(AttributeId("lastname"), Op.Eq, Value("jackson"))
+        ),
+        SingleRelation(RelationalId("Person")))
+    )
+  }
 }
