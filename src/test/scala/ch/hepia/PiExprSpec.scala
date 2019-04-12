@@ -3,14 +3,14 @@ package ch.hepia
 import Ast.Relation.{Join, JoinCond, Sigma, SingleRelation}
 import Ast._
 import ch.hepia.Ast.LogicOp.Cond
-import ch.hepia.Parser.piExpr
+import ch.hepia.Parser.parseAlgebra
 import fastparse.Parsed
 import org.scalatest._
 import fastparse._
 
 class PiExprSpec extends FlatSpec with Matchers {
   "Pi expr with one relation" should "succeed" in {
-    val Parsed.Success(value, _) = parse("pi(test, coucou)(Person)", piExpr(_))
+    val Parsed.Success(value, _) = parse("pi(test, coucou)(Person)", parseAlgebra(_))
     value should be (
       PiExpr(
         Seq(AttributeId("test"), AttributeId("coucou")),
@@ -18,7 +18,7 @@ class PiExprSpec extends FlatSpec with Matchers {
     )
   }
   "Pi and sigma expr with one relation" should "succeed" in {
-    val Parsed.Success(value, _) = parse("pi(test, coucou)(sigma(a = u)(Person))", piExpr(_))
+    val Parsed.Success(value, _) = parse("pi(test, coucou)(sigma(a = u)(Person))", parseAlgebra(_))
     value should be (
       PiExpr(
         Seq(AttributeId("test"), AttributeId("coucou")),
@@ -28,7 +28,7 @@ class PiExprSpec extends FlatSpec with Matchers {
         )
       )
     )
-    val Parsed.Success(value2, _) = parse("pi(name)(sigma(age = 18)(Person))", piExpr(_))
+    val Parsed.Success(value2, _) = parse("pi(name)(sigma(age = 18)(Person))", parseAlgebra(_))
     value2 should be (
       PiExpr(
         Seq(AttributeId("name")),
@@ -40,7 +40,7 @@ class PiExprSpec extends FlatSpec with Matchers {
     )
   }
   "Pi expr with one join" should "succeed" in {
-    val Parsed.Success(value, _) = parse("pi(name, immat)(Person join(id = uid) Car)", piExpr(_))
+    val Parsed.Success(value, _) = parse("pi(name, immat)(Person join(id = uid) Car)", parseAlgebra(_))
     value should be (
       PiExpr(
         Seq(AttributeId("name"), AttributeId("immat")),
@@ -53,7 +53,7 @@ class PiExprSpec extends FlatSpec with Matchers {
     )
   }
   "Pi expr and sigma with one join" should "succeed" in {
-    val Parsed.Success(value, _) = parse("pi(name, immat)(sigma(color = red)(Person join(id = uid) Car))", piExpr(_))
+    val Parsed.Success(value, _) = parse("pi(name, immat)(sigma(color = red)(Person join(id = uid) Car))", parseAlgebra(_))
     value should be (
       PiExpr(
         Seq(AttributeId("name"), AttributeId("immat")),

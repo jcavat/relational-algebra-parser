@@ -49,9 +49,11 @@ object Parser {
   def andTerm[_: P]: P[LogicOp] = P( logicTerm ~ " and " ~ logicExpr ).map {case (t, lf) => Ast.LogicOp.And(t,lf)}
   def logicExpr[_: P]: P[LogicOp] = P( andTerm | logicTerm )
 
-  def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")" ~ relationExpr ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
+  def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")(" ~ relationExpr ~ ")" ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
 
-  def relationExpr[_: P] = P("(" ~ (sigmaExpr|joinExpr|relationName) ~ ")")
+  def relationExpr[_: P] = P( sigmaExpr|joinExpr|relationName )
 
-  def piExpr[_: P] = P("pi(" ~ funcArguments ~ ")" ~ relationExpr).map { case (attrs, rel) => PiExpr(attrs, rel) }
+  def piExpr[_: P] = P("pi(" ~ funcArguments ~ ")(" ~ relationExpr ~ ")").map { case (attrs, rel) => PiExpr(attrs, rel) }
+
+  def parseAlgebra[_: P] = P(piExpr|relationExpr)
 }
