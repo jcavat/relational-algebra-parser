@@ -15,7 +15,7 @@ object Parser {
 
   def attributeName[_: P] = P( idName.! ).map( AttributeId )
 
-  def relationName[_: P]: P[Relation] = P( capitalizedIdName.! ).map(n => Ast.Relation.SingleRelation(RelationalId(n)))
+  def singleRelation[_: P]: P[Relation] = P( capitalizedIdName.! ).map(n => Ast.Relation.SingleRelation(RelationalId(n)))
 
   def funcArguments[_: P] =
     P( " ".rep ~ attributeName.!.rep(sep=" ".rep ~ "," ~ " ".rep./) ).map(seqs => seqs.map( AttributeId ) )
@@ -27,10 +27,10 @@ object Parser {
       _ <- P(" = ")
       a2 <- attributeName
       _ <- P(") ")
-    } yield Relation.JoinCond(a1, Op.Eq, a2)
+    } yield JoinCond(a1, Op.Eq, a2)
   )
 
-  def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationExpr)
+  def joinedRelations[_: P]: P[Relation] = P(singleRelation ~ eqJoinCond ~ relationExpr)
     .map { case (left, cond, right) => Ast.Relation.Join(left,cond,right) }
 
   def neqSign[_: P]: P[Op] = P("!=").!.map( _ => Op.Eq )
@@ -51,7 +51,7 @@ object Parser {
 
   def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")(" ~ relationExpr ~ ")" ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
 
-  def relationExpr[_: P] = P( sigmaExpr|joinExpr|relationName )
+  def relationExpr[_: P] = P( sigmaExpr|joinedRelations|singleRelation )
 
   def piExpr[_: P] = P("pi(" ~ funcArguments ~ ")(" ~ relationExpr ~ ")").map { case (attrs, rel) => PiExpr(attrs, rel) }
 

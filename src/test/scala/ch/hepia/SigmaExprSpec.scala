@@ -1,7 +1,7 @@
 package ch.hepia
 
 import ch.hepia.Ast.LogicOp.{And, Cond, Or}
-import ch.hepia.Ast.Relation.{Join, JoinCond, Sigma, SingleRelation}
+import ch.hepia.Ast.Relation.{Join, Sigma, SingleRelation}
 import ch.hepia.Ast._
 import ch.hepia.Parser.parseAlgebra
 import ch.hepia.Parser.parseAlgebra

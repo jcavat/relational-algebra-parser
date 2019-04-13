@@ -1,6 +1,6 @@
 package ch.hepia
 
-import Ast.Relation.{Join, JoinCond, Sigma, SingleRelation}
+import Ast.Relation.{Join, Sigma, SingleRelation}
 import Ast._
 import ch.hepia.Ast.LogicOp.Cond
 import ch.hepia.Parser.parseAlgebra
