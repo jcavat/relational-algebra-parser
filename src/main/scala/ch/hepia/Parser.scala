@@ -31,7 +31,7 @@ object Parser {
   )
 
   def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationExpr)
-    .map { case (left, cond, right) => Ast.Relation.Join(left,cond,right) }
+    .map { case (left, cond, right) => Ast.Relation.Join(right,cond,left) }
 
   def neqSign[_: P]: P[Op] = P("!=").!.map( _ => Op.Eq )
   def eqSign[_: P]: P[Op] = P("=").!.map( _ => Op.Eq )
