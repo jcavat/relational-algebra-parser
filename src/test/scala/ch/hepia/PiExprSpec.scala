@@ -1,6 +1,6 @@
 package ch.hepia
 
-import Ast.Relation.{Join, JoinCond, Sigma, SingleRelation}
+import Ast.Relation.{RelationExpr, Sigma, SingleRelation}
 import Ast._
 import ch.hepia.Ast.LogicOp.Cond
 import ch.hepia.Parser.parseAlgebra
@@ -14,7 +14,7 @@ class PiExprSpec extends FlatSpec with Matchers {
     value should be (
       PiExpr(
         Seq(AttributeId("test"), AttributeId("coucou")),
-        SingleRelation(RelationalId("Person")))
+        RelationExpr( SingleRelation(RelationalId("Person"))) )
     )
   }
   "Pi and sigma expr with one relation" should "succeed" in {
@@ -24,7 +24,9 @@ class PiExprSpec extends FlatSpec with Matchers {
         Seq(AttributeId("test"), AttributeId("coucou")),
         Sigma(
           Cond(AttributeId("a"), Ast.Op.Eq, Value("u")),
-          SingleRelation(RelationalId("Person"))
+          RelationExpr(
+            SingleRelation(RelationalId("Person"))
+          )
         )
       )
     )
@@ -34,20 +36,23 @@ class PiExprSpec extends FlatSpec with Matchers {
         Seq(AttributeId("name")),
         Sigma(
           Cond(AttributeId("age"), Ast.Op.Eq, Value("18")),
-          SingleRelation(RelationalId("Person"))
+          RelationExpr(
+            SingleRelation(RelationalId("Person"))
+          )
         )
       )
     )
   }
   "Pi expr with one join" should "succeed" in {
     val Parsed.Success(value, _) = parse("pi(name, immat)(Person join(id = uid) Car)", parseAlgebra(_))
+    println(value)
     value should be (
       PiExpr(
         Seq(AttributeId("name"), AttributeId("immat")),
-        Join(
+        RelationExpr(
           SingleRelation(RelationalId("Person")),
-          JoinCond(AttributeId("id"), Op.Eq, AttributeId("uid")),
-          SingleRelation(RelationalId("Car"))
+          (JoinCond(AttributeId("id"), Op.Eq, AttributeId("uid")), SingleRelation(RelationalId("Car"))
+          )
         )
       )
     )
@@ -59,10 +64,9 @@ class PiExprSpec extends FlatSpec with Matchers {
         Seq(AttributeId("name"), AttributeId("immat")),
         Sigma(
           Cond(AttributeId("color"), Ast.Op.Eq, Value("red")),
-          Join(
+          RelationExpr(
             SingleRelation(RelationalId("Person")),
-            JoinCond(AttributeId("id"), Op.Eq, AttributeId("uid")),
-            SingleRelation(RelationalId("Car"))
+            ( JoinCond(AttributeId("id"), Op.Eq, AttributeId("uid")), SingleRelation(RelationalId("Car")) )
           )
         )
       )

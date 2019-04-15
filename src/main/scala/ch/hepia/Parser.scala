@@ -5,6 +5,7 @@ import fastparse._
 import NoWhitespace._
 import Ast._
 import ch.hepia.Ast.LogicOp.Cond
+import ch.hepia.Ast.Relation.SingleRelation
 
 object Parser {
   def value[_: P]: P[Value] = CharIn("a-zA-Z0-9").rep(1).!.map( Value )
@@ -15,7 +16,7 @@ object Parser {
 
   def attributeName[_: P] = P( idName.! ).map( AttributeId )
 
-  def relationName[_: P]: P[Relation] = P( capitalizedIdName.! ).map(n => Ast.Relation.SingleRelation(RelationalId(n)))
+  def singleRelation[_: P]: P[SingleRelation] = P( capitalizedIdName.! ).map(n => Ast.Relation.SingleRelation(RelationalId(n)))
 
   def funcArguments[_: P] =
     P( " ".rep ~ attributeName.!.rep(sep=" ".rep ~ "," ~ " ".rep./) ).map(seqs => seqs.map( AttributeId ) )
@@ -27,11 +28,13 @@ object Parser {
       _ <- P(" = ")
       a2 <- attributeName
       _ <- P(") ")
-    } yield Relation.JoinCond(a1, Op.Eq, a2)
+    } yield JoinCond(a1, Op.Eq, a2)
   )
 
-  def joinExpr[_: P]: P[Relation] = P(relationName ~ eqJoinCond ~ relationExpr)
-    .map { case (left, cond, right) => Ast.Relation.Join(right,cond,left) }
+  def originExpr[_: P]: P[Relation.RelationExpr] =
+    P(singleRelation ~ (eqJoinCond ~ singleRelation).rep(sep = " ".rep(1))).map {
+      case (sr, joined) => Relation.RelationExpr(sr, joined:_*)
+    }
 
   def neqSign[_: P]: P[Op] = P("!=").!.map( _ => Op.Eq )
   def eqSign[_: P]: P[Op] = P("=").!.map( _ => Op.Eq )
@@ -49,9 +52,9 @@ object Parser {
   def andTerm[_: P]: P[LogicOp] = P( logicTerm ~ " and " ~ logicExpr ).map {case (t, lf) => Ast.LogicOp.And(t,lf)}
   def logicExpr[_: P]: P[LogicOp] = P( andTerm | logicTerm )
 
-  def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")(" ~ relationExpr ~ ")" ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
+  def sigmaExpr[_: P]: P[Relation] = P( "sigma(" ~ logicExpr ~ ")(" ~ originExpr ~ ")" ).map { case (logicOp, rel) => Relation.Sigma(logicOp, rel) }
 
-  def relationExpr[_: P] = P( sigmaExpr|joinExpr|relationName )
+  def relationExpr[_: P]: P[Relation] = P( sigmaExpr|originExpr )
 
   def piExpr[_: P] = P("pi(" ~ funcArguments ~ ")(" ~ relationExpr ~ ")").map { case (attrs, rel) => PiExpr(attrs, rel) }
 
