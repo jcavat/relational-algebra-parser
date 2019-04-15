@@ -1,19 +1,21 @@
 package ch.hepia
 
+import scala.util.Try
+
 
 object Main {
   import fastparse._
 
   def main(args: Array[String]): Unit = {
-    //val Parsed.Success(value, successIndex) = parse("pi(test, coucou)(sigma(t = k)(Person join(p = v) Voiture join(v = t) Test join(t = g) Groz))", Parser.parseAlgebra(_))
-    //val Parsed.Success(value, successIndex) = parse("pi(test, coucou)(sigma(t = k)(Person))", Parser.parseAlgebra(_))
-    val Parsed.Success(value, successIndex) = parse("pi(test, coucou)(sigma(t = k)(Person join(p = c) Car join(c = z) Zob))", Parser.parseAlgebra(_))
+
+    val toParse: String = Try ( args(0) ).getOrElse("pi(test, coucou)(sigma(t = k)(Person join(p = c) Car join(c = z) Zob))")
+
+    val Parsed.Success(value, successIndex) = parse(toParse, Parser.parseAlgebra(_))
 
 
-    println(value)
+    println("-" * 50)
     println(ShowSql[Ast].showSql(value))
-    // println( value.showSql )
-//    println(value.showSql)
+    println("-" * 50)
 
   }
 

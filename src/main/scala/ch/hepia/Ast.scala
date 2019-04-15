@@ -80,7 +80,7 @@ object Ast {
   case class PiExpr(attributes: Seq[AttributeId], relation: Relation) extends Ast
 
   implicit val canShow = ShowSql[Ast]{
-    case PiExpr(attrs, rel) => "SELECT " + attrs.map(a => a.name).mkString(", ") + " FROM " + ShowSql[Relation].showSql(rel)
+    case PiExpr(attrs, rel) => "SELECT " + attrs.map(a => a.name).mkString(", ") + "\nFROM " + ShowSql[Relation].showSql(rel)
     case o => o.toString
   }
 
