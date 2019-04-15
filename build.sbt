@@ -4,7 +4,7 @@ lazy val root = (project in file(".")).
       organization    := "ch.hepia",
       scalaVersion    := "2.12.8"
     )),
-    name := "My Akka HTTP Project",
+    name := "Relational Algebra Parser",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "fastparse" % "2.1.0",
       "org.scalactic" %% "scalactic" % "3.0.5",
