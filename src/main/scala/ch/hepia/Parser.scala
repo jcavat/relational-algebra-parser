@@ -32,7 +32,7 @@ object Parser {
   )
 
   def originExpr[_: P]: P[Relation.RelationExpr] =
-    P(singleRelation ~ (eqJoinCond ~ singleRelation).rep(sep = " ".rep(1))).map {
+    P(singleRelation ~ (eqJoinCond ~ singleRelation).rep).map {
       case (sr, joined) => Relation.RelationExpr(sr, joined:_*)
     }
 

@@ -31,7 +31,6 @@ object Ast {
     case class Or(left: LogicOp, right: LogicOp) extends LogicOp
     case class Cond(left: AttributeId, op: Op, right: Value) extends LogicOp
 
-    /*
     def toSql(logicOp: LogicOp): String = logicOp match {
       case And(left, right) => toSql(left) + " AND " + toSql(right)
       case Or(left, right) => toSql(left) + " OR " + toSql(right)
@@ -39,20 +38,17 @@ object Ast {
     }
 
     implicit val canShow = ShowSql[LogicOp]( toSql )
-    */
   }
 
   case class JoinCond(left: AttributeId, op: Op, right: AttributeId) {
 
   }
 
-  /*
   object JoinCond {
     def toSql(joinCond: JoinCond): String = {
       joinCond.left.name + ShowSql[Op].showSql(joinCond.op) + joinCond.right.name
     }
   }
-  */
 
   // ... Sigma( A join B join C )
   // .... A join B join C
@@ -71,27 +67,21 @@ object Ast {
     case class RelationExpr(singleRelation: SingleRelation, joined: (JoinCond, Relation)*) extends Relation
 
 
-    /*
-    def toSql(relation: Relation, placeBefore: String = ""): String = relation match {
+    def toSql(relation: Relation): String = relation match {
       case SingleRelation(id) => id.name
-      case Join(left, cond, Join(l,c,r)) =>
-        toSql(left) + " INNER JOIN " + toSql(l) + " ON " + JoinCond.toSql(cond) + " INNER JOIN " + toSql(r, " ON " + JoinCond.toSql(c))
-      case Join(left, cond, right) => toSql(left) + placeBefore + " INNER JOIN " + toSql(right) + " ON " + JoinCond.toSql(cond)
-      case Sigma(cond, rel) =>  toSql(rel) + " WHERE " + ShowSql[LogicOp].showSql(cond)
+      case RelationExpr(sr, joined @ _* ) => toSql(sr) + joined.map { case (jc, rel) => "\nINNER JOIN " + toSql(rel) + " ON " + JoinCond.toSql(jc) }.mkString
+      case Sigma(cond, rel) =>  toSql(rel) + "\nWHERE " + ShowSql[LogicOp].showSql(cond)
     }
-    */
 
-//    implicit val canShow = ShowSql[Relation]( r => toSql(r, "") )
+    implicit val canShow = ShowSql[Relation]( r => toSql(r) )
 
   }
 
   case class PiExpr(attributes: Seq[AttributeId], relation: Relation) extends Ast
 
-  /*
   implicit val canShow = ShowSql[Ast]{
     case PiExpr(attrs, rel) => "SELECT " + attrs.map(a => a.name).mkString(", ") + " FROM " + ShowSql[Relation].showSql(rel)
     case o => o.toString
   }
-  */
 
 }
