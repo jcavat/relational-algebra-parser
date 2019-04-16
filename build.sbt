@@ -1,4 +1,5 @@
 lazy val commonSettings = Seq(
+  name := "relational-algebra-parser",
   version := "0.1",
   organization := "ch.hepia",
   scalaVersion := "2.12.8",
