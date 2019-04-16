@@ -41,7 +41,6 @@ object AstShowSql {
     case PiExpr(attrs, rel) => "SELECT " + attrs.map(a => a.name).mkString(", ") + "\nFROM " + ShowSql[Relation].showSql(rel)
     case Sigma(cond, rel) => "SELECT * \nFROM " + ShowSql[Relation].showSql(rel) + "\nWHERE " + ShowSql[BooleanOperator].showSql(cond)
     case RelationExpr(sr, joined @ _* ) => "SELECT * \nFROM " + toSql(sr) + joined.map { case (jc, rel) => "\nINNER JOIN " + toSql(rel) + " ON " + JoinCond.toSql(jc) }.mkString
-    case o => o.toString
   }
 
 

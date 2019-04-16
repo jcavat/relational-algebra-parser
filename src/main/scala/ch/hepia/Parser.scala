@@ -8,6 +8,7 @@ import ch.hepia.Ast.BooleanOperator.Cond
 import ch.hepia.Ast.Relation.SingleRelation
 
 object Parser {
+
   def value[_: P]: P[Value] = CharIn("a-zA-Z0-9").rep(1).!.map( Value )
 
   def idName[_: P] = CharIn("a-z").rep(1)
