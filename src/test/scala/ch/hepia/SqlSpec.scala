@@ -13,7 +13,7 @@ class SqlSpec extends FlatSpec with Matchers {
       """
         |SELECT *
         |FROM Person
-      """.stripMargin.stripLeading.stripTrailing)
+      """.stripMargin.strip)
   }
   "One join" should "export to SQL successfully" in {
     val Parsed.Success(value, _) = parse("Person join(p = c) Car", parseAlgebra(_))
@@ -22,7 +22,7 @@ class SqlSpec extends FlatSpec with Matchers {
         |SELECT *
         |FROM Person
         |INNER JOIN Car ON p = c
-      """.stripMargin.stripLeading.stripTrailing)
+      """.stripMargin.strip)
   }
   "Pi expr with one relation" should "export to SQL successfully" in {
     val Parsed.Success(value, _) = parse("pi(firstname, lastname)(Person)", parseAlgebra(_))
@@ -30,7 +30,7 @@ class SqlSpec extends FlatSpec with Matchers {
       """
         |SELECT firstname, lastname
         |FROM Person
-      """.stripMargin.stripLeading.stripTrailing)
+      """.stripMargin.strip)
   }
   "Pi expr with one join" should "export to SQL successfully" in {
     val Parsed.Success(value, _) = parse("pi(firstname, lastname)(Person join(p = c) Car)", parseAlgebra(_))
@@ -39,7 +39,7 @@ class SqlSpec extends FlatSpec with Matchers {
         |SELECT firstname, lastname
         |FROM Person
         |INNER JOIN Car ON p = c
-      """.stripMargin.stripLeading.stripTrailing)
+      """.stripMargin.strip)
   }
   "Sigma expr with one join" should "export to SQL successfully" in {
     val Parsed.Success(value, _) = parse("sigma(age = 30)(Person join(p = c) Car)", parseAlgebra(_))
@@ -49,7 +49,7 @@ class SqlSpec extends FlatSpec with Matchers {
         |FROM Person
         |INNER JOIN Car ON p = c
         |WHERE age = 30
-      """.stripMargin.stripLeading.stripTrailing)
+      """.stripMargin.strip)
   }
   "Pi/Sigma expr with one join" should "export to SQL successfully" in {
     val Parsed.Success(value, _) = parse("pi(firstname, age)(sigma(age > 18)(Person join(p = c) Car))", parseAlgebra(_))
@@ -59,6 +59,6 @@ class SqlSpec extends FlatSpec with Matchers {
         |FROM Person
         |INNER JOIN Car ON p = c
         |WHERE age > 18
-      """.stripMargin.stripLeading.stripTrailing)
+      """.stripMargin.strip)
   }
 }
