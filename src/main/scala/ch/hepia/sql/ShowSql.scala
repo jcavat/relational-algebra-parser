@@ -1,4 +1,4 @@
-package ch.hepia
+package ch.hepia.sql
 
 trait ShowSql[A] {
   def showSql( a: A ): String
@@ -6,7 +6,7 @@ trait ShowSql[A] {
 
 object ShowSql {
   def apply[A]( implicit s: ShowSql[A] ) = s
-  def show[A: ShowSql](a: A) = ShowSql[A].showSql(a)
+  def showSql[A: ShowSql](a: A) = ShowSql[A].showSql(a)
   implicit class ShowOps[A: ShowSql](a: A) {
     def showSql = ShowSql[A].showSql(a)
   }

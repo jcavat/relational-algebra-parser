@@ -2,7 +2,7 @@ package ch.hepia
 
 import Ast.Relation.{RelationExpr, Sigma, SingleRelation}
 import Ast._
-import ch.hepia.Ast.LogicOp.Cond
+import ch.hepia.Ast.BooleanOperator.Cond
 import ch.hepia.Parser.parseAlgebra
 import fastparse.Parsed
 import org.scalatest._
@@ -23,7 +23,7 @@ class PiExprSpec extends FlatSpec with Matchers {
       PiExpr(
         Seq(AttributeId("test"), AttributeId("coucou")),
         Sigma(
-          Cond(AttributeId("a"), Ast.Op.Eq, Value("u")),
+          Cond(AttributeId("a"), Ast.Operator.Eq, Value("u")),
           RelationExpr(
             SingleRelation(RelationalId("Person"))
           )
@@ -35,7 +35,7 @@ class PiExprSpec extends FlatSpec with Matchers {
       PiExpr(
         Seq(AttributeId("name")),
         Sigma(
-          Cond(AttributeId("age"), Ast.Op.Eq, Value("18")),
+          Cond(AttributeId("age"), Ast.Operator.Eq, Value("18")),
           RelationExpr(
             SingleRelation(RelationalId("Person"))
           )
@@ -51,7 +51,7 @@ class PiExprSpec extends FlatSpec with Matchers {
         Seq(AttributeId("name"), AttributeId("immat")),
         RelationExpr(
           SingleRelation(RelationalId("Person")),
-          (JoinCond(AttributeId("id"), Op.Eq, AttributeId("uid")), SingleRelation(RelationalId("Car"))
+          (JoinCond(AttributeId("id"), Operator.Eq, AttributeId("uid")), SingleRelation(RelationalId("Car"))
           )
         )
       )
@@ -63,10 +63,10 @@ class PiExprSpec extends FlatSpec with Matchers {
       PiExpr(
         Seq(AttributeId("name"), AttributeId("immat")),
         Sigma(
-          Cond(AttributeId("color"), Ast.Op.Eq, Value("red")),
+          Cond(AttributeId("color"), Ast.Operator.Eq, Value("red")),
           RelationExpr(
             SingleRelation(RelationalId("Person")),
-            ( JoinCond(AttributeId("id"), Op.Eq, AttributeId("uid")), SingleRelation(RelationalId("Car")) )
+            ( JoinCond(AttributeId("id"), Operator.Eq, AttributeId("uid")), SingleRelation(RelationalId("Car")) )
           )
         )
       )

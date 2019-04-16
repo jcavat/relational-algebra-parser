@@ -1,6 +1,6 @@
 package ch.hepia
 
-import ch.hepia.Ast.LogicOp.{And, Cond, Or}
+import ch.hepia.Ast.BooleanOperator.{And, Cond, Or}
 import ch.hepia.Ast.Relation.{RelationExpr, Sigma, SingleRelation}
 import ch.hepia.Ast._
 import ch.hepia.Parser.parseAlgebra
@@ -12,7 +12,7 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     val Parsed.Success(value, _) = parse("sigma(city = Lausanne)(Person)", parseAlgebra(_))
     value should be (
       Sigma(
-        Cond(AttributeId("city"), Op.Eq, Value("Lausanne")),
+        Cond(AttributeId("city"), Operator.Eq, Value("Lausanne")),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
         )
@@ -22,7 +22,7 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     val Parsed.Success(value, _) = parse("sigma(age <= 18)(Person)", parseAlgebra(_))
     value should be (
       Sigma(
-        Cond(AttributeId("age"), Op.LessEq, Value("18")),
+        Cond(AttributeId("age"), Operator.LessEq, Value("18")),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
         )
@@ -32,7 +32,7 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     val Parsed.Success(value, _) = parse("sigma(age >= 18)(Person)", parseAlgebra(_))
     value should be (
       Sigma(
-        Cond(AttributeId("age"), Op.BigEq, Value("18")),
+        Cond(AttributeId("age"), Operator.BigEq, Value("18")),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
         )
@@ -42,7 +42,7 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     val Parsed.Success(value, _) = parse("sigma(age < 18)(Person)", parseAlgebra(_))
     value should be (
       Sigma(
-        Cond(AttributeId("age"), Op.Less, Value("18")),
+        Cond(AttributeId("age"), Operator.Less, Value("18")),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
         )
@@ -52,7 +52,7 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     val Parsed.Success(value, _) = parse("sigma(age > 18)(Person)", parseAlgebra(_))
     value should be (
       Sigma(
-        Cond(AttributeId("age"), Op.Big, Value("18")),
+        Cond(AttributeId("age"), Operator.Big, Value("18")),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
         )
@@ -63,8 +63,8 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     value should be (
       Sigma(
         And(
-          Cond(AttributeId("age"), Op.Big, Value("18")),
-          Cond(AttributeId("name"), Op.Eq, Value("david"))
+          Cond(AttributeId("age"), Operator.Big, Value("18")),
+          Cond(AttributeId("name"), Operator.Eq, Value("david"))
         ),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
@@ -76,8 +76,8 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     value should be (
       Sigma(
         Or(
-          Cond(AttributeId("age"), Op.Big, Value("18")),
-          Cond(AttributeId("name"), Op.Eq, Value("david"))
+          Cond(AttributeId("age"), Operator.Big, Value("18")),
+          Cond(AttributeId("name"), Operator.Eq, Value("david"))
         ),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
@@ -89,10 +89,10 @@ class SigmaExprSpec extends FlatSpec with Matchers {
     value should be (
       Sigma(
         And(
-          Cond(AttributeId("age"), Op.Big, Value("18")),
+          Cond(AttributeId("age"), Operator.Big, Value("18")),
           Or(
-            Cond(AttributeId("name"), Op.Eq, Value("david")),
-            Cond(AttributeId("lastname"), Op.Eq, Value("jackson"))
+            Cond(AttributeId("name"), Operator.Eq, Value("david")),
+            Cond(AttributeId("lastname"), Operator.Eq, Value("jackson"))
           )
         ),
         RelationExpr(
@@ -106,10 +106,10 @@ class SigmaExprSpec extends FlatSpec with Matchers {
       Sigma(
         And(
           Or(
-            Cond(AttributeId("age"), Op.Big, Value("18")),
-            Cond(AttributeId("name"), Op.Eq, Value("david"))
+            Cond(AttributeId("age"), Operator.Big, Value("18")),
+            Cond(AttributeId("name"), Operator.Eq, Value("david"))
           ),
-          Cond(AttributeId("lastname"), Op.Eq, Value("jackson"))
+          Cond(AttributeId("lastname"), Operator.Eq, Value("jackson"))
         ),
         RelationExpr(
           SingleRelation(RelationalId("Person")))
