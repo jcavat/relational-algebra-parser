@@ -10,13 +10,13 @@ A pedagogic parser aims to translate relational algebra into SQL written in Scal
 Run
 
 ```
-sbt run "sigma(age = 20)(Person)
+sbt run "sigma(age = 20)(Person)"
 ```
 
 Bundle
 
 ```
-scala assembly
+sbt assembly
 ```
 
 Run with java
