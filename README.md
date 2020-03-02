@@ -2,7 +2,7 @@
 
 ## Summary 
 
-A pedagogic parser aims to translate relational algebra into SQL written in Scala with [https://www.lihaoyi.com/fastparse/](Fastparse 2.x)
+A pedagogic parser aims to translate relational algebra into SQL written in Scala with [Fastparse 2.x](https://www.lihaoyi.com/fastparse)
 
 
 ### How to 
